@@ -1,0 +1,39 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Polygon1",
+                "desc": "This is polygon 1"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -69.8583977,
+                            18.5072193
+                        ],
+                        [
+                            -69.8564773,
+                            18.5055711
+                        ],
+                        [
+                            -69.8544603,
+                            18.5071786
+                        ],
+                        [
+                            -69.8562949,
+                            18.5090404
+                        ],
+                        [
+                            -69.8583977,
+                            18.5072193
+                        ]
+                    ]
+                ]
+            }
+        }
+    ]
+}
