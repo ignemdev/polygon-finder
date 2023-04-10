@@ -1,0 +1,41 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-69.8563504, 18.509195, 0],
+            [-69.8586678, 18.5073433, 0],
+            [-69.8566508, 18.5053085, 0],
+            [-69.8543334, 18.5070585, 0],
+            [-69.8563504, 18.509195, 0]
+          ]
+        ]
+      },
+      "properties": {
+        "name": "Megacentro",
+        "description": "Megacentro poligono"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-69.8532228, 18.5135759, 0],
+            [-69.8548321, 18.5130672, 0],
+            [-69.8554758, 18.5125382, 0],
+            [-69.8539952, 18.5108697, 0],
+            [-69.8524288, 18.5115819, 0],
+            [-69.8532228, 18.5135759, 0]
+          ]
+        ]
+      },
+      "properties": { "name": "Cachon", "description": "Cachon de la rubia" }
+    }
+  ]
+}

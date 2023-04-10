@@ -20,19 +20,14 @@ class polygonMap {
       }
     ).addTo(this.#_map);
 
-    // this.#_map = new google.maps.Map(mapContainer, {
-    //   zoom: 6,
-    //   styles: this.#_style,
-    //   disableDefaultUI: true,
-    //   center: { lat: 18.5112853, lng: -69.8911881 },
-    // });
-
     this.setCurrentPosition();
   }
 
   cleanMap() {
-    this.#_map.data.forEach((feature) => this.#_map.data.remove(feature));
-    this.#_markers.forEach((marker) => marker.setMap(null));
+    this.#_map.eachLayer((layer) => {
+      if (layer instanceof L.Marker || layer instanceof L.GeoJSON)
+        this.#_map.removeLayer(layer);
+    });
     this.#_markers, (this.#_polygons = []);
   }
 
@@ -42,36 +37,36 @@ class polygonMap {
         const {
           coords: { latitude, longitude },
         } = position;
-        this.setCenter({ lat: latitude, lng: longitude });
+        this.setCenter([latitude, longitude]);
         this.setZoom(15);
       });
     }
   }
 
-  setCenter = ({ lat, lng }) => this.#_map.setView([lat, lng], 0);
+  setCenter = (latLang) => this.#_map.setView(latLang, 15);
 
   setZoom = (amount) => this.#_map.setZoom(amount);
 
   setPolygons(parsedGeojson) {
-    this.#_map.data.addGeoJson(parsedGeojson);
-    this.#_map.data.forEach((feature) => {
-      const polygon = new google.maps.Polygon({
-        path: feature.getGeometry().getAt(0).getArray(),
-        label: feature.j.name,
-        description: feature.j.description || feature.j.desc,
-      });
-      this.#_polygons.push(polygon);
-    });
+    const geojsonLayer = L.geoJSON(parsedGeojson, {
+      onEachFeature: (feature, layer) => {
+        layer.bindPopup(feature.properties.name).openPopup();
+        layer.setStyle({ color: "#6c757d" });
+      },
+    }).addTo(this.#_map);
+
+    const polygons = geojsonLayer.getLayers();
+    this.#_polygons.push(polygons);
   }
 
   setMarkers(parsedJson) {
     this.setCenter(parsedJson[0].position);
+    const icon = L.icon({ iconUrl: "assets/images/marker-icon-red.png" });
     parsedJson.forEach((element) => {
-      const marker = new google.maps.Marker({
-        position: element.position,
-        map: this.#_map,
-        title: element.name,
-      });
+      const marker = L.marker(element.position, { icon })
+        .addTo(this.#_map)
+        .bindPopup(element.name)
+        .openPopup();
       this.#_markers.push(marker);
     });
   }
