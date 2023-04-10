@@ -69,12 +69,13 @@
       integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM="
       crossorigin=""
     ></script>
+    <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
     <link rel="stylesheet" type="text/css" href="assets/css/app.css" />
   </head>
 
   <body>
     <main>
-      <section class="d-none d-lg-block">
+      <section>
         <aside class="d-inline position-absolute p-2">
           <div
             class="bg-light text-secondary rounded shadow-lg h-100 overflow-auto"
@@ -217,10 +218,7 @@
         [
          {
           "name": "A1",
-          "position": {
-           "lat": 18.506876,
-           "lng": -69.856623
-          }
+          "position": [18.508779, -69.852371]
          },
         ]
                             </code></pre>
@@ -230,7 +228,7 @@
         </div>
         <div id="map"></div>
       </section>
-      <section class="d-lg-none vh-100">
+      <!-- <section class="d-lg-none vh-100">
         <div
           class="alert alert-danger d-flex align-items-center m-0 h-100"
           role="alert"
@@ -240,7 +238,7 @@
             user experience issues.
           </h3>
         </div>
-      </section>
+      </section> -->
     </main>
     <!--Dependencies-->
     <script
@@ -253,7 +251,6 @@
       integrity="sha384-oesi62hOLfzrys4LxRF63OJCXdXDipiYWBnvTl9Y9/TRlw5xlKIEHpNyvvDShgf/"
       crossorigin="anonymous"
     ></script>
-    <script src="assets/js/PolygonMap.js"></script>
-    <script src="assets/js/app.js"></script>
+    <script type="module" src="assets/js/app.js"></script>
   </body>
 </html>

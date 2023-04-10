@@ -2,6 +2,8 @@ class polygonMap {
   #_map;
   #_markers = [];
   #_polygons = [];
+  #_defaultZoom = 15;
+  #_defaultCenter = [18.5112853, -69.8911881];
 
   constructor(mapContainer) {
     this.initMap(mapContainer);
@@ -9,7 +11,7 @@ class polygonMap {
 
   initMap(mapContainer) {
     this.#_map = L.map(mapContainer, {
-      center: [18.5112853, -69.8911881],
+      center: this.#_defaultCenter,
       zoom: 6,
     });
 
@@ -23,13 +25,9 @@ class polygonMap {
     this.setCurrentPosition();
   }
 
-  cleanMap() {
-    this.#_map.eachLayer((layer) => {
-      if (layer instanceof L.Marker || layer instanceof L.GeoJSON)
-        this.#_map.removeLayer(layer);
-    });
-    this.#_markers, (this.#_polygons = []);
-  }
+  setCenter = (latLang) => this.#_map.setView(latLang, this.#_defaultZoom);
+
+  setZoom = (amount) => this.#_map.setZoom(amount);
 
   setCurrentPosition() {
     if (navigator.geolocation) {
@@ -38,14 +36,10 @@ class polygonMap {
           coords: { latitude, longitude },
         } = position;
         this.setCenter([latitude, longitude]);
-        this.setZoom(15);
+        this.setZoom(this.#_defaultZoom);
       });
     }
   }
-
-  setCenter = (latLang) => this.#_map.setView(latLang, 15);
-
-  setZoom = (amount) => this.#_map.setZoom(amount);
 
   setPolygons(parsedGeojson) {
     const geojsonLayer = L.geoJSON(parsedGeojson, {
@@ -55,15 +49,17 @@ class polygonMap {
       },
     }).addTo(this.#_map);
 
-    const polygons = geojsonLayer.getLayers();
-    this.#_polygons.push(polygons);
+    this.#_polygons = [...geojsonLayer.getLayers()];
   }
 
   setMarkers(parsedJson) {
     this.setCenter(parsedJson[0].position);
-    const icon = L.icon({ iconUrl: "assets/images/marker-icon-red.png" });
+    const icon = L.icon({
+      iconUrl: "assets/images/marker-icon-red.png",
+      iconAnchor: [12.5, 41],
+    });
     parsedJson.forEach((element) => {
-      const marker = L.marker(element.position, { icon })
+      const marker = L.marker(element.position, { icon, title: element.name })
         .addTo(this.#_map)
         .bindPopup(element.name)
         .openPopup();
@@ -71,17 +67,33 @@ class polygonMap {
     });
   }
 
-  getMarkers() {
-    return this.#_markers.map((marker) => {
-      const isInside = (polygon) =>
-        google.maps.geometry.poly.containsLocation(marker.position, polygon);
-      const polygonFound = this.#_polygons.find(isInside);
-      return {
-        name: marker.title,
-        belongsTo: polygonFound ? polygonFound.label : "NF",
-        lat: marker.position.lat(),
-        lng: marker.position.lng(),
+  getMarkersWithPolygons() {
+    if (this.#_markers.length <= 0 || this.#_polygons.length <= 0) return;
+
+    const markersWithPolygons = this.#_markers.map((marker) => {
+      const { lat, lng } = marker.getLatLng();
+      const polygonFound = this.#_polygons.find((polygon) =>
+        turf.booleanPointInPolygon([lng, lat], polygon.feature.geometry)
+      );
+      const markersWithPolygon = {
+        name: marker.options.title,
+        belongsTo: polygonFound ? polygonFound.feature.properties.name : "NF",
+        lat,
+        lng,
       };
+      return markersWithPolygon;
     });
+    return markersWithPolygons;
+  }
+
+  cleanMap() {
+    this.#_map.eachLayer((layer) => {
+      if (layer instanceof L.Marker || layer instanceof L.GeoJSON)
+        this.#_map.removeLayer(layer);
+    });
+    this.#_markers = [];
+    this.#_polygons = [];
   }
 }
+
+export default polygonMap;

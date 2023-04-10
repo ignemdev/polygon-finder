@@ -1,32 +1,46 @@
-//map init
-const polyMap =
-  screen.width >= 992 ? new polygonMap(document.querySelector("#map")) : null;
+//imports
+import polygonMap from "./PolygonMap.js";
 
-const drawBtn = document.querySelector("#draw-btn"),
-  downloadBtn = document.querySelector("#download-btn"),
-  polygonsInput = document.querySelector("#polygons-input"),
-  markersInput = document.querySelector("#markers-input");
+//elements
+const mapContainer = document.querySelector("#map");
+const polygonsInput = document.querySelector("#polygons-input");
+const markersInput = document.querySelector("#markers-input");
+const drawBtn = document.querySelector("#draw-btn");
+const downloadBtn = document.querySelector("#download-btn");
 
-const downloadMarkers = (e) => {
+//logic
+const polyMap = new polygonMap(mapContainer);
+
+const downloadMarkersWithPolygons = () => {
+  const markersWithPolygons = polyMap.getMarkersWithPolygons();
+
+  if (!Array.isArray(markersWithPolygons) || markersWithPolygons?.length <= 0)
+    return;
+
   const dataURL = `data:application/json,${JSON.stringify(
-    polyMap.getMarkers()
+    markersWithPolygons
   )}`;
-  downloadBtn.setAttribute("download", "Markers.json");
+  downloadBtn.setAttribute("download", "MarkersWithPolygons.json");
   downloadBtn.setAttribute("href", dataURL);
 };
 
 const readFile = (input, drawFunction) => {
+  const file = input.files[0];
+
+  if (!file) return;
+
   const fileReader = new FileReader();
-  fileReader.onload = (e) => polyMap[drawFunction](JSON.parse(e.target.result));
-  fileReader.readAsText(input.files[0]);
+  fileReader.onload = ({ target: { result } }) =>
+    drawFunction(JSON.parse(result));
+  fileReader.readAsText(file);
 };
 
-const drawPolysAndMarkers = (e) => {
+const drawPolygonsAndMarkers = () => {
   polyMap.cleanMap();
-  readFile(markersInput, "setMarkers");
-  readFile(polygonsInput, "setPolygons");
+  readFile(markersInput, polyMap.setMarkers.bind(polyMap));
+  readFile(polygonsInput, polyMap.setPolygons.bind(polyMap));
 };
 
-downloadBtn.addEventListener("click", downloadMarkers);
-
-drawBtn.addEventListener("click", drawPolysAndMarkers);
+//listeners
+downloadBtn.addEventListener("click", downloadMarkersWithPolygons);
+drawBtn.addEventListener("click", drawPolygonsAndMarkers);
