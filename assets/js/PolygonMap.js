@@ -6,13 +6,14 @@ class polygonMap {
   #_defaultCenter = [18.5112853, -69.8911881];
 
   constructor(mapContainer) {
-    this.initMap(mapContainer);
+    this.init(mapContainer);
   }
 
-  initMap(mapContainer) {
+  init(mapContainer) {
     this.#_map = L.map(mapContainer, {
       center: this.#_defaultCenter,
       zoom: 6,
+      zoomControl: false,
     });
 
     L.tileLayer(
@@ -86,7 +87,7 @@ class polygonMap {
     return markersWithPolygons;
   }
 
-  cleanMap() {
+  clean() {
     this.#_map.eachLayer((layer) => {
       if (layer instanceof L.Marker || layer instanceof L.GeoJSON)
         this.#_map.removeLayer(layer);
