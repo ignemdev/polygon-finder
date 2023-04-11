@@ -1,256 +1,118 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, shrink-to-fit=no"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="author" content="Ignacio Morel" />
-    <meta
-      name="description"
-      content="Web app to assign each map marker a polygon based on their position."
-    />
-    <meta
-      name="keywords"
-      content="polygons, markers, google, maps, api, helper, app, web"
-    />
+    <meta name="description" content="Web app to assign each map marker a polygon based on their position." />
+    <meta name="keywords" content="polygons, markers, google, maps, api, helper, app, web" />
     <!--Favicons-->
-    <link
-      rel="apple-touch-icon"
-      sizes="76x76"
-      href="assets/favicons/apple-touch-icon.png"
-    />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="32x32"
-      href="assets/favicons/favicon-32x32.png"
-    />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="16x16"
-      href="assets/favicons/favicon-16x16.png"
-    />
+    <link rel="apple-touch-icon" sizes="76x76" href="assets/favicons/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicons/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/favicons/favicon-16x16.png" />
     <link rel="manifest" href="assets/favicons/site.webmanifest" />
-    <link
-      rel="mask-icon"
-      href="assets/favicons/safari-pinned-tab.svg"
-      color="#5bbad5"
-    />
+    <link rel="mask-icon" href="assets/favicons/safari-pinned-tab.svg" color="#5bbad5" />
     <meta name="msapplication-TileColor" content="#da532c" />
     <meta name="theme-color" content="#ffffff" />
     <title>Polygon Finder</title>
     <!--Dependencies-->
-    <link
-      rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css"
-      integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I"
-      crossorigin="anonymous"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500&display=swap"
-      rel="stylesheet"
-    />
-    <script
-      src="https://kit.fontawesome.com/2f5ce3c3e5.js"
-      crossorigin="anonymous"
-    ></script>
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
-      integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI="
-      crossorigin=""
-    />
-    <script
-      src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
-      integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM="
-      crossorigin=""
-    ></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous" />
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500&display=swap" rel="stylesheet" />
+    <script src="https://kit.fontawesome.com/2f5ce3c3e5.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+        integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
+        integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
     <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
     <link rel="stylesheet" type="text/css" href="assets/css/app.css" />
-  </head>
+</head>
 
-  <body>
+<body>
     <main>
-      <section>
-        <aside class="d-inline position-absolute p-2">
-          <div
-            class="bg-light text-secondary rounded shadow-lg h-100 overflow-auto"
-          >
-            <div class="p-4 cursor-pointer">
-              <h3 class="m-0 text-center">
-                <i class="fas fa-draw-polygon"></i> Finder
-              </h3>
-              <small>
-                <p class="m-0 text-center">by Ignacio Pujols</p>
-                <p class="m-0 mt-2 text-center">
-                  Web app to assign each map marker a polygon based on their
-                  position.
-                </p>
-              </small>
-            </div>
-            <hr class="m-0" />
-            <div class="p-4">
-              <h6>
-                <i class="fas fa-map-marker-alt mr-1 text-danger"></i> Upload
-                your markers:
-              </h6>
-              <div>
-                <button
-                  type="button"
-                  class="btn btn-danger btn-sm w-100 shadow-sm"
-                  data-toggle="modal"
-                  data-target="#markerModal"
-                >
-                  Markers JSON schema
-                </button>
-                <div class="form-file form-file-sm my-2">
-                  <input
-                    type="file"
-                    class="form-file-input"
-                    id="markers-input"
-                    accept=".json"
-                  />
-                  <label
-                    class="form-file-label border-danger shadow-sm"
-                    for="markers-input"
-                  >
-                    <span class="form-file-text text-danger"
-                      >Markers json...</span
-                    >
-                    <span class="form-file-button bg-danger text-light"
-                      >Browse</span
-                    >
-                  </label>
+        <section>
+            <aside class="d-inline position-absolute p-3">
+                <div class="bg-light text-secondary rounded shadow-lg mh-100 overflow-y-auto">
+                    <div class="p-4 cursor-pointer">
+                        <h4 class="m-0 text-center">
+                            <i class="fas fa-draw-polygon"></i> Finder
+                        </h4>
+                    </div>
+                    <hr class="m-0" />
+                    <div class="p-4">
+                        <h6>1. Upload your markers <i class="fas fa-map-marker-alt text-danger"></i></h6>
+                        <button type="button" class="btn btn-light text-secondary btn-sm w-100 shadow-sm"
+                            data-bs-toggle="modal" data-bs-target="#markerModal">
+                            Show markers schema
+                        </button>
+                        <input class="form-control form-control-sm mt-2" id="markers-input" type="file" accept=".json">
+                    </div>
+                    <hr class="m-0" />
+                    <div class="p-4">
+                        <h6>2. Upload your polygons <i class="fas fa-info-circle" data-bs-toggle="tooltip"
+                                data-bs-html="true"
+                                title="<p class='m-0 text-wrap'><small>There's a couple of web tools to convert your polygons KML files into a single geojson polygon collection, for example: Aspose or Ingeapps</small></p>"></i>
+                        </h6>
+                        <input class="form-control form-control-sm mt-2" id="polygons-input" type="file"
+                            accept=".geojson">
+                    </div>
+                    <hr class="m-0" />
+                    <div class="p-4">
+                        <h6>3. Draw polygons <i class="fas fa-draw-polygon text-secondary"></i> & markers <i
+                                class="fas fa-map-marker-alt text-danger"></i></h6>
+                        <button id="draw-btn" type="button" class="btn btn-secondary btn-sm w-100 shadow-sm">
+                            Draw polygons & markers
+                        </button>
+                        <button id="clean-btn" type="button" class="btn btn-danger btn-sm w-100 mt-2 shadow-sm">
+                            Clean map
+                        </button>
+                    </div>
+                    <hr class="m-0" />
+                    <div class="p-4">
+                        <h6>4. Download located markers <i class="fas fa-solid fa-download text-secondary"></i></h6>
+                        <button id="download-btn" type="button" class="btn btn-danger btn-sm w-100 shadow-sm">
+                            Download located markers
+                        </button>
+                    </div>
+                    <p class="text-center text-body-secondary"><small>Made by Ignacio Morel</small></p>
                 </div>
-              </div>
-            </div>
-            <hr class="m-0" />
-            <div class="p-4">
-              <h6>
-                <i class="fas fa-draw-polygon mr-1 text-dark"></i> Upload your
-                polygons:
-              </h6>
-              <div>
-                <p class="m-0 text-wrap">
-                  <small
-                    >There's a lot of web tools to get your polygons geojson
-                    collection out of KML or other geo files, for example:
-                    <a
-                      href="https://products.aspose.app/gis/conversion/kml-to-geojson"
-                      >Aspose</a
-                    >
-                    or
-                    <a
-                      href="http://www.apps.ingeapps.com/gtools/en/kml-geojson.php"
-                      >Ingeapps</a
-                    ></small
-                  >
-                </p>
-                <div class="form-file form-file-sm my-2">
-                  <input
-                    type="file"
-                    class="form-file-input"
-                    id="polygons-input"
-                    accept=".json, .geojson"
-                  />
-                  <label
-                    class="form-file-label border-dark shadow-sm"
-                    for="polygons-input"
-                  >
-                    <span class="form-file-text text-dark"
-                      >Polygons geojson...</span
-                    >
-                    <span class="form-file-button bg-dark text-light"
-                      >Browse</span
-                    >
-                  </label>
+            </aside>
+            <div class="modal fade" id="markerModal" tabindex="-1" aria-labelledby="markerModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5 text-secondary" id="markerModalLabel">Marker JSON schema</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <pre class="p-2 bg-dark text-light rounded m-0">
+                                <code>
+[
+    {
+        "name": "A1",
+        "position": [18.508779, -69.852371]
+    },
+]
+                                </code>
+                        </pre>
+                        </div>
+                    </div>
                 </div>
-              </div>
             </div>
-            <hr class="m-0" />
-            <div class="p-4 d-flex">
-              <button
-                id="draw-btn"
-                type="button"
-                class="btn btn-danger btn-sm w-100 shadow-sm mr-2"
-              >
-                Draw polygons & markers
-              </button>
-              <a
-                href="#"
-                id="download-btn"
-                type="button"
-                class="btn btn-light text-secondary btn-sm w-100 shadow-sm"
-              >
-                Download markers
-              </a>
-            </div>
-          </div>
-        </aside>
-        <div
-          class="modal fade"
-          id="markerModal"
-          tabindex="-1"
-          aria-labelledby="markerModalLabel"
-          aria-hidden="true"
-        >
-          <div class="modal-dialog modal-dialog-centered modal-sm">
-            <div class="modal-content border-0">
-              <div class="modal-header border-0">
-                <h6 class="modal-title text-secondary" id="markerModalLabel">
-                  Marker JSON schema
-                </h6>
-                <button
-                  type="button"
-                  class="close"
-                  data-dismiss="modal"
-                  aria-label="Close"
-                >
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div class="modal-body p-0 px-2 pb-2">
-                <pre class="p-2 bg-dark text-light rounded m-0"><code>
-        [
-         {
-          "name": "A1",
-          "position": [18.508779, -69.852371]
-         },
-        ]
-                            </code></pre>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div id="map"></div>
-      </section>
-      <!-- <section class="d-lg-none vh-100">
-        <div
-          class="alert alert-danger d-flex align-items-center m-0 h-100"
-          role="alert"
-        >
-          <h3>
-            Sorry, the app is not available for phones neither tablets due to
-            user experience issues.
-          </h3>
-        </div>
-      </section> -->
+            <div id="map"></div>
+        </section>
     </main>
     <!--Dependencies-->
-    <script
-      src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
-      integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js"
-      integrity="sha384-oesi62hOLfzrys4LxRF63OJCXdXDipiYWBnvTl9Y9/TRlw5xlKIEHpNyvvDShgf/"
-      crossorigin="anonymous"
-    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"
+        integrity="sha384-zYPOMqeu1DAVkHiLqWBUTcbYfZ8osu1Nd6Z89ify25QV9guujx43ITvfi12/QExE"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.min.js"
+        integrity="sha384-Y4oOpwW3duJdCWv5ly8SCFYWqFDsfob/3GkgExXKV4idmbt98QcxXYs9UoXAB7BZ"
+        crossorigin="anonymous"></script>
     <script type="module" src="assets/js/app.js"></script>
-  </body>
+</body>
+
 </html>
